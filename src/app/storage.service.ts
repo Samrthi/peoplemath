@@ -18,6 +18,7 @@ import { Period } from './period';
 import { Observable, of } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ObjectUpdateResponse } from './objectupdateresponse';
+import {catchError, map} from 'rxjs/operators';
 
 @Injectable()
 export class StorageService {
@@ -45,7 +46,7 @@ export class StorageService {
   getPeriods(teamId: string): Observable<Period[]> {
     return this.http.get<Period[]>('/api/period/' + teamId + '/');
   }
-  
+
   getPeriod(teamId: string, periodId: string): Observable<Period> {
     return this.http.get<Period>('/api/period/' + teamId + '/' + periodId);
   }
@@ -58,5 +59,15 @@ export class StorageService {
   updatePeriod(teamId: string, period: Period): Observable<ObjectUpdateResponse> {
     let options = {headers: new HttpHeaders({'Content-Type': 'application/json'})};
     return this.http.put<ObjectUpdateResponse>('/api/period/' + teamId + '/' + period.id, period, options);
+  }
+
+  userHasWritePrivileges(): Observable<boolean> {
+    return this.http.get<{[index: string]: string[]}>('/api/userprivileges/').pipe(
+      map((privileges: {[index: string]: string[]}) => {
+        const priv = 'privileges';
+        return !!privileges[priv]?.includes('write');
+      }),
+      catchError(() => of(false))
+    );
   }
 }

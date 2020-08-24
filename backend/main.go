@@ -127,9 +127,30 @@ func (s *Server) makeHandler() http.Handler {
 	r.HandleFunc("/api/period/{teamID}/", s.auth.authorize(s.handlePostPeriod)).Methods(http.MethodPost)
 	r.HandleFunc("/api/period/{teamID}/{periodID}", s.auth.authorize(s.handlePutPeriod)).Methods(http.MethodPut)
 
+	r.HandleFunc("/api/userprivileges/", s.handleGetUserPrivileges).Methods(http.MethodGet)
+
 	r.HandleFunc("/improve", s.handleImprove).Methods(http.MethodGet)
 
 	return r
+}
+
+func (s *Server) handleGetUserPrivileges(w http.ResponseWriter, r *http.Request) {
+	idToken := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+	userEmail, httpError := s.auth.authenticate(idToken)
+	if httpError != nil {
+		http.Error(w, *httpError, http.StatusUnauthorized)
+		return
+	}
+
+	privileges := []string{}
+	if getDomain(userEmail) == s.authDomain {
+		privileges = append(privileges, "read", "write")
+	}
+
+	privilegesJSON := map[string][]string{"privileges": privileges}
+	enc := json.NewEncoder(w)
+	w.Header().Set("Content-Type", "application/json")
+	enc.Encode(privilegesJSON)
 }
 
 func (s *Server) ensureTeamExistence(w http.ResponseWriter, r *http.Request, teamID string, expected bool) bool {

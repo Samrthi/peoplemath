@@ -29,10 +29,10 @@ export class AppComponent {
     private snackBar: MatSnackBar
   ) {
     this.notificationService.notification$.subscribe(message => {
-      this.snackBar.open(message);
+      this.snackBar.open(message, 'Dismiss');
     });
     this.notificationService.error$.subscribe(errorMessage => {
-      this.snackBar.open(errorMessage);
+      this.snackBar.open(errorMessage, 'Dismiss');
     });
   }
   title = 'PeopleMath';

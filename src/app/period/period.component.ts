@@ -23,13 +23,15 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { EditBucketDialogComponent, EditBucketDialogData } from '../edit-bucket-dialog/edit-bucket-dialog.component';
 import { EditPeriodDialogComponent, EditPeriodDialogData } from '../edit-period-dialog/edit-period-dialog.component';
-import { catchError, debounceTime } from 'rxjs/operators';
+import {catchError, debounceTime, map} from 'rxjs/operators';
 import { of, Subject } from 'rxjs';
 import { ImmutablePerson } from '../person';
 import { CommitmentType, ImmutableObjective } from '../objective';
 import { Assignment, ImmutableAssignment } from '../assignment';
 import { AggregateBy } from '../assignments-classify/assignments-classify.component';
 import { ThemePalette } from '@angular/material/core';
+import {Observable} from 'rxjs/internal/Observable';
+import {NotificationService} from '../services/notification.service';
 
 @Component({
   selector: 'app-period',
@@ -47,13 +49,14 @@ export class PeriodComponent implements OnInit {
   readonly eventsRequiringSave = new Subject<any>();
   // To enable access to this enum from the template
   readonly AggregateBy = AggregateBy;
- 
+
   constructor(
     private storage: StorageService,
     private route: ActivatedRoute,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private changeDet: ChangeDetectorRef,
+    private notificationService: NotificationService,
   ) { }
 
   ngOnInit() {
@@ -68,11 +71,18 @@ export class PeriodComponent implements OnInit {
   }
 
   enableEditing(): void {
-    this.isEditingEnabled = true;
-    this.showOrderButtons = false;
-    // Shouldn't be strictly necessary, as these events should always come from the DOM,
-    // but to prevent future bugs...
-    this.changeDet.detectChanges();
+    this.storage.userHasWritePrivileges().subscribe(bool => {
+      if (!bool) {
+        console.log(bool);
+        this.notificationService.error$.next('You do not have write access.')
+      } else {
+        this.isEditingEnabled = true;
+        this.showOrderButtons = false;
+        // Shouldn't be strictly necessary, as these events should always come from the DOM,
+        // but to prevent future bugs...
+        this.changeDet.detectChanges();
+      }
+    });
   }
 
   disableEditing(): void {
@@ -197,7 +207,7 @@ export class PeriodComponent implements OnInit {
     });
     return totalCommitted;
   }
-  
+
   /**
    * Fraction of allocated resources which is allocated to committed objectives
    */
