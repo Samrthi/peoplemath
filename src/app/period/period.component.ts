@@ -44,6 +44,7 @@ import {NotificationService} from '../services/notification.service';
 export class PeriodComponent implements OnInit {
   team?: ImmutableTeam;
   period?: ImmutablePeriod;
+  hasWritePermissions: boolean = false;
   isEditingEnabled: boolean = false;
   showOrderButtons: boolean = false;
   readonly eventsRequiringSave = new Subject<any>();
@@ -56,7 +57,6 @@ export class PeriodComponent implements OnInit {
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private changeDet: ChangeDetectorRef,
-    private notificationService: NotificationService,
   ) { }
 
   ngOnInit() {
@@ -68,21 +68,18 @@ export class PeriodComponent implements OnInit {
       }
     });
     this.eventsRequiringSave.pipe(debounceTime(2000)).subscribe(_ => this.performSave());
+    this.storage.userHasWritePermissions().subscribe(bool => {
+      this.hasWritePermissions = bool;
+      this.changeDet.detectChanges();
+    });
   }
 
   enableEditing(): void {
-    this.storage.userHasWritePrivileges().subscribe(bool => {
-      if (!bool) {
-        console.log(bool);
-        this.notificationService.error$.next('You do not have write access.')
-      } else {
-        this.isEditingEnabled = true;
-        this.showOrderButtons = false;
-        // Shouldn't be strictly necessary, as these events should always come from the DOM,
-        // but to prevent future bugs...
-        this.changeDet.detectChanges();
-      }
-    });
+    this.isEditingEnabled = true;
+    this.showOrderButtons = false;
+    // Shouldn't be strictly necessary, as these events should always come from the DOM,
+    // but to prevent future bugs...
+    this.changeDet.detectChanges();
   }
 
   disableEditing(): void {

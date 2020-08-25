@@ -42,6 +42,6 @@
   <tr mat-footer-row *matFooterRowDef="displayedColumns(); sticky: true"></tr>
 </table>
 </div>
-<p><button (click)="addPerson()" mat-button [disabled]="!isEditingEnabled" color="primary">Add</button></p>
+<p><button *ngIf="hasWritePermissions" (click)="addPerson()" mat-button [disabled]="!isEditingEnabled" color="primary">Add</button></p>
 </mat-card-content>
 </mat-card>

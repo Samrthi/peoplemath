@@ -8,7 +8,7 @@
     <span (click)="edit()">{{bucket?.displayName}}
     <span [class.error]="isOverAllocated()"> ({{bucket?.allocationPercentage}}%)</span>
     </span>
-    <button (click)="addObjective()" mat-button [disabled]="!isEditingEnabled" color="primary" class="header-button">Add Objective</button>
+    <button *ngIf="hasWritePermissions" (click)="addObjective()" mat-button [disabled]="!isEditingEnabled" color="primary" class="header-button">Add Objective</button>
 </mat-card-title>
 <mat-card-subtitle>
   <span [class.warning]="resourcesAllocated() > bucketAllocationLimit()">

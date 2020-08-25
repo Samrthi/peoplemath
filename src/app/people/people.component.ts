@@ -51,6 +51,7 @@ export class PeopleComponent implements OnInit {
   @Input() totalAssignmentCount?: number;
   @Input() unit?: string;
   @Input() isEditingEnabled?: boolean;
+  @Input() hasWritePermissions?: boolean;
   @Output() onNew = new EventEmitter<ImmutablePerson>();
   @Output() onChanged = new EventEmitter<[ImmutablePerson, ImmutablePerson]>();
   @Output() onDelete = new EventEmitter<ImmutablePerson>();

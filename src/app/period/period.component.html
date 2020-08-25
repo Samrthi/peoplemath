@@ -13,7 +13,7 @@
     <h4 class="mat-h4" [class.warning]="committedAllocationsTooHigh()">{{committedAllocationRatio() | percent}} committed ({{committedAllocations() | number:'1.0-1'}} of {{totalAllocated() | number:'1.0-1'}} {{period?.unit}})</h4>
 </div>
 <div fxLayout="column" fxFlex="calc(30%-20px)" fxFlex.lt-md="100%" fxLayoutGap="20px">
-<div class="editor-options">
+<div *ngIf="hasWritePermissions" class="editor-options">
     <span *ngIf="isEditingEnabled">
         <button mat-fab (click)="toggleReordering()" [color]="reorderButtonColour()"><mat-icon>reorder</mat-icon></button>
         <button mat-fab (click)="disableEditing()" color="primary"><mat-icon>done</mat-icon></button>
@@ -35,12 +35,13 @@
     [unallocatedTime]="unallocatedTime()"
     [showOrderButtons]="showOrderButtons && isEditingEnabled"
     [isEditingEnabled]="isEditingEnabled"
+    [hasWritePermissions]="hasWritePermissions"
     [otherBuckets]="otherBuckets(bucket)"
     (onMoveBucketUp)="moveBucketUpOne($event)"
     (onMoveBucketDown)="moveBucketDownOne($event)"
     (onChanged)="onBucketChanged($event[0], $event[1])"></app-bucket>
 
-<div><button (click)="addBucket()" mat-button [disabled]="!isEditingEnabled" color="primary">Add Bucket</button></div>
+<div *ngIf="hasWritePermissions"><button (click)="addBucket()" mat-button [disabled]="!isEditingEnabled" color="primary">Add Bucket</button></div>
 
 </div>
 
@@ -55,6 +56,7 @@
     [totalAssignmentCount]="totalAssignmentCount()"
     [unit]="period?.unit"
     [isEditingEnabled]="isEditingEnabled"
+    [hasWritePermissions]="hasWritePermissions"
     (onNew)="onNewPerson($event)"
     (onChanged)="onChangedPerson($event[0], $event[1])"
     (onDelete)="deletePerson($event)">

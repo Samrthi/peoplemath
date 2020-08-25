@@ -37,6 +37,7 @@ export class BucketComponent implements OnInit {
   @Input() unallocatedTime?: ReadonlyMap<string, number>;
   @Input() showOrderButtons?: boolean;
   @Input() isEditingEnabled?: boolean;
+  @Input() hasWritePermissions?: boolean;
   @Input() otherBuckets?: readonly ImmutableBucket[];
   @Output() onMoveBucketUp = new EventEmitter<ImmutableBucket>();
   @Output() onMoveBucketDown = new EventEmitter<ImmutableBucket>();

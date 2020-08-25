@@ -61,7 +61,7 @@ export class StorageService {
     return this.http.put<ObjectUpdateResponse>('/api/period/' + teamId + '/' + period.id, period, options);
   }
 
-  userHasWritePrivileges(): Observable<boolean> {
+  userHasWritePermissions(): Observable<boolean> {
     return this.http.get<{[index: string]: string[]}>('/api/userprivileges/').pipe(
       map((privileges: {[index: string]: string[]}) => {
         const priv = 'privileges';
