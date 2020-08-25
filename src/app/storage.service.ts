@@ -62,10 +62,10 @@ export class StorageService {
   }
 
   userHasWritePermissions(): Observable<boolean> {
-    return this.http.get<{[index: string]: string[]}>('/api/userprivileges/').pipe(
-      map((privileges: {[index: string]: string[]}) => {
-        const priv = 'privileges';
-        return !!privileges[priv]?.includes('write');
+    return this.http.get<{[index: string]: boolean}>('/api/userprivileges/').pipe(
+      map((permissions: {[index: string]: boolean}) => {
+        const writePermissions = 'hasWritePermissions';
+        return permissions[writePermissions];
       }),
       catchError(() => of(false))
     );

@@ -141,16 +141,14 @@ func (s *Server) handleGetUserPrivileges(w http.ResponseWriter, r *http.Request)
 		http.Error(w, *httpError, http.StatusUnauthorized)
 		return
 	}
-
-	privileges := []string{}
+	hasWritePermissions := map[string]bool{"hasWritePermissions": false}
 	if getDomain(userEmail) == s.authDomain {
-		privileges = append(privileges, "read", "write")
+		hasWritePermissions["hasWritePermissions"] = true
 	}
 
-	privilegesJSON := map[string][]string{"privileges": privileges}
 	enc := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json")
-	enc.Encode(privilegesJSON)
+	enc.Encode(hasWritePermissions)
 }
 
 func (s *Server) ensureTeamExistence(w http.ResponseWriter, r *http.Request, teamID string, expected bool) bool {
